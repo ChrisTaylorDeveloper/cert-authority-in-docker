@@ -72,9 +72,11 @@ Keep the container running.  Then, in another terminal
 
 ```bash
 # Clean up from a previous run
-rm -rf ~/Desktop/ca_service_issued
-```
+rm -rf ~/Desktop/ca_service && mkdir -p ~/Desktop/ca_service
 
-```bash
-docker cp ca_service:/tmp/ca-service/easy-rsa/pki/issued ~/Desktop/ca_service_issued && ls -la ~/Desktop/ca_service_issued/
+# Get the CA signed certs
+docker cp ca_service:/tmp/ca-service/easy-rsa/pki/issued ~/Desktop/ca_service/issued
+
+# Get the CA public key
+docker cp ca_service:/tmp/ca-service/easy-rsa/pki/ca.crt ~/Desktop/ca_service
 ```
