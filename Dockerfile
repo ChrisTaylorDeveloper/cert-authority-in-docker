@@ -5,7 +5,11 @@ RUN apt-get update && \
   easy-rsa && \
   rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /tmp/easy-rsa
-WORKDIR /tmp/easy-rsa
-RUN ln -s /usr/share/easy-rsa/* /tmp/easy-rsa/
-RUN ./easyrsa init-pki
+RUN mkdir -p /tmp/ca-service/easy-rsa
+RUN mkdir -p /tmp/ca-service/
+
+RUN ln -s /usr/share/easy-rsa/* /tmp/ca-service/easy-rsa/
+
+COPY vars /tmp/ca-service/
+
+WORKDIR /tmp/ca-service
