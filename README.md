@@ -6,16 +6,26 @@
 - You may need to run the commands below out of order.
 - Seemingly easy-rsa is a wrapper around openssl, from OpenVPN.
 
-## Getting started
+## Certificate Signing Requests
+
+Place your certificate signing requests in directory `sign-requests`. Run the following command to inspect the subject of a certificate signing request
+
+```bash
+openssl req -in example.req -noout -subject
+```
+
+## Docker build, run
 
 ```bash
 docker build -t ca_service .
+
+# Start a container, mounting you CSRs as a shared volume
 docker run --name ca_service --rm -v ${PWD}/sign-requests:/tmp/ca-service/sign-requests -it ca_service bash
 ```
 
 ## (Re)create working dir
 
-Only if required i.e. if starting over!
+Only if required i.e. if starting over
 
 ```bash
 rm -rf /tmp/ca-service/easy-rsa/* && ln -s /usr/share/easy-rsa/* /tmp/ca-service/easy-rsa/
@@ -32,27 +42,20 @@ cd easy-rsa
 
 ## Create the CA
 
-Before you can create a CA’s private key and cert, you need a `vars` file.
+Before you can create a CA’s private key and cert, you need a `vars` file
 
 ```bash
-# An example vars file can also be found in directory easy-rsa.
+# An example vars file can also be found in directory `easy-rsa`.
 cp /tmp/ca-service/vars /tmp/ca-service/easy-rsa/
 
 # With no passphrase and no interaction.
 yes | ./easyrsa build-ca nopass
 ```
 
-## Inspect the CSR
-
-Select any of the requests in the sign-requests dir.
-
-```bash
-openssl req -in example.req -noout -subject
-```
 
 ## Import request
 
-Import the request to easyrsa. Choose any handy shortname (does not need to match the CN).
+Import a request to easyrsa. Choose a handy shortname which does not need to match the CN
 
 ```bash
 ./easyrsa import-req ../sign-requests/foo.csr short_name
@@ -77,6 +80,10 @@ rm -rf ~/Desktop/ca_service && mkdir -p ~/Desktop/ca_service
 # Get the CA signed certs
 docker cp ca_service:/tmp/ca-service/easy-rsa/pki/issued ~/Desktop/ca_service/issued
 
-# Get the CA public key
+# Get the Certificate Authority certificate
 docker cp ca_service:/tmp/ca-service/easy-rsa/pki/ca.crt ~/Desktop/ca_service
 ```
+
+## Add to Chrome
+
+Try chrome://certificate-manager/localcerts/usercerts and add your CA cert as a trusted certificate.
